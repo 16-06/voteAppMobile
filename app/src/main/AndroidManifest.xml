@@ -13,7 +13,10 @@
         android:theme="@style/Theme.VoteApp"
         android:networkSecurityConfig="@xml/network_security_config">
 
-
+        <activity
+            android:name=".ui.login.LoginActivity"
+            android:theme="@style/Theme.VoteApp" />
+        
         <activity
             android:name=".ui.main.MainActivity"
             android:exported="true"

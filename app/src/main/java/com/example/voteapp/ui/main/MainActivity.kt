@@ -20,6 +20,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
         val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
         val token = prefs.getString("jwt_token", null)
 
@@ -29,8 +32,6 @@ class MainActivity : ComponentActivity() {
             return
         }
 
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 

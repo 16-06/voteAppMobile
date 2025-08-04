@@ -8,13 +8,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.voteapp.R
 import com.example.voteapp.data.model.LoginRequest
-import com.example.voteapp.data.model.LoginResponse
 import com.example.voteapp.data.network.RetrofitInstance
 import com.example.voteapp.ui.main.MainActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import androidx.core.content.edit
+import okhttp3.ResponseBody
 
 
 class LoginActivity : AppCompatActivity() {
@@ -31,10 +31,10 @@ class LoginActivity : AppCompatActivity() {
             val loginRequest = LoginRequest(usernameInput.text.toString(),passwordInput.text.toString())
 
 
-            RetrofitInstance.getApi(this).login(loginRequest).enqueue(object : Callback<LoginResponse> {
-                override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>){
+            RetrofitInstance.getApi(this).login(loginRequest).enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>){
                     if(response.isSuccessful){
-                        val token = response.body()?.token
+                        val token = response.body()?.string()?.trim('"')
                         if (token!= null){
                             val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
                             prefs.edit { putString("jwt_token", token) }
@@ -50,7 +50,7 @@ class LoginActivity : AppCompatActivity() {
                     }
                 }
 
-                override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                     Toast.makeText(this@LoginActivity, "Error ${t.message}",Toast.LENGTH_SHORT).show()
                 }
 
