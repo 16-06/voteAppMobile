@@ -1,5 +1,6 @@
 package com.example.voteapp.ui.main
 
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.util.Base64
 import com.example.voteapp.R
 import com.example.voteapp.data.model.Vote
+import com.example.voteapp.ui.vote.VoteDetailsActivity
 
 class VoteAdapter(private val votes:List<Vote>) : RecyclerView.Adapter<VoteAdapter.VoteViewHolder>() {
 
@@ -39,6 +41,13 @@ class VoteAdapter(private val votes:List<Vote>) : RecyclerView.Adapter<VoteAdapt
         }
         catch (e: Exception){
             holder.image.setImageResource(R.drawable.ic_launcher_foreground)
+        }
+
+        holder.itemView.setOnClickListener{
+            val context = holder.itemView.context
+            val intent = Intent(context, VoteDetailsActivity::class.java)
+            intent.putExtra("voteId", vote.id)
+            context.startActivity(intent)
         }
     }
 

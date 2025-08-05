@@ -2,6 +2,7 @@ package com.example.voteapp.ui.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,6 +14,7 @@ import com.example.voteapp.ui.login.LoginActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import androidx.core.content.edit
 
 
 class MainActivity : ComponentActivity() {
@@ -32,8 +34,12 @@ class MainActivity : ComponentActivity() {
             return
         }
 
+
+
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
+
+
 
         fetchVotes()
     }
@@ -41,8 +47,19 @@ class MainActivity : ComponentActivity() {
     private fun fetchVotes() {
         RetrofitInstance.getApi(this).getAllVotes().enqueue(object: Callback<List<Vote>> {
             override fun onResponse(call: Call<List<Vote>>, response: Response<List<Vote>>) {
+
+                if(response.code() == 401){
+                    getSharedPreferences("app_prefs", MODE_PRIVATE).edit { remove("jwt_token") }
+                    startActivity(
+                        Intent(this@MainActivity, LoginActivity::class.java)
+                    )
+                    finish()
+                    return
+                }
+
                 if(response.isSuccessful){
                     val votes = response.body() ?: emptyList()
+                    Log.d("VoteApp", "Votes: ${votes.map { it.id }}")
                     recyclerView.adapter = VoteAdapter(votes)
                 }
                 else{
