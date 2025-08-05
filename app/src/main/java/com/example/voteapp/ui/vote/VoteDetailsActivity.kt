@@ -14,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.voteapp.R
 import com.example.voteapp.data.api.VoteApi
 import com.example.voteapp.data.model.Comment
+import com.example.voteapp.data.model.CommentRequestDto
+import com.example.voteapp.data.model.CommentResponseDto
 import com.example.voteapp.data.model.VoteOption
 import com.example.voteapp.data.model.WhoVotedYetRequestDto
 import com.example.voteapp.data.model.WhoVotedYetResponseDto
@@ -182,8 +184,14 @@ class VoteDetailsActivity : AppCompatActivity() {
     }
 
     private fun postComment(commentText: String) {
-        api.postComment(mapOf("commentBody" to commentText, "voteId" to voteId)).enqueue(object : Callback<Comment> {
-            override fun onResponse(call: Call<Comment>, response: Response<Comment>) {
+
+        val commentRequest = CommentRequestDto(
+            commentBody = commentText,
+            voteId = voteId.toLong()
+        )
+
+        api.postComment(commentRequest).enqueue(object : Callback<CommentResponseDto> {
+            override fun onResponse(call: Call<CommentResponseDto>, response: Response<CommentResponseDto>) {
                 if(response.isSuccessful){
                     commentInput.text.clear()
                     loadComments()
@@ -193,7 +201,7 @@ class VoteDetailsActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onFailure(call: Call<Comment>, t: Throwable) {
+            override fun onFailure(call: Call<CommentResponseDto>, t: Throwable) {
                Toast.makeText(this@VoteDetailsActivity, "Error posting comment: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })

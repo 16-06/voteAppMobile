@@ -1,6 +1,8 @@
 package com.example.voteapp.data.api
 
 import com.example.voteapp.data.model.Comment
+import com.example.voteapp.data.model.CommentRequestDto
+import com.example.voteapp.data.model.CommentResponseDto
 import com.example.voteapp.data.model.LoginRequest
 import com.example.voteapp.data.model.Vote
 import com.example.voteapp.data.model.VoteDetails
@@ -42,7 +44,7 @@ interface VoteApi {
     fun getComments(@Path("id") voteId: Int): Call<List<Comment>>
 
     @POST("/api/vote-comments")
-    fun postComment(@Body body: Map<String, Any>): Call<Comment>
+    fun postComment(@Body body: CommentRequestDto): Call<CommentResponseDto>
 
     @DELETE("/api/vote-comments/{id}")
     fun deleteComment(@Path("id") commentId: Int): Call<Void>
