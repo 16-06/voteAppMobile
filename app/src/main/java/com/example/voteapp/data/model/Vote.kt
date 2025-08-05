@@ -5,5 +5,5 @@ data class Vote(
     val name: String,
     val author: String,
     val category: String,
-    val image: String
+    val imageData: String?
 )

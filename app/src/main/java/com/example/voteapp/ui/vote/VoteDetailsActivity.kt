@@ -1,8 +1,12 @@
 package com.example.voteapp.ui.vote
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -89,6 +93,25 @@ class VoteDetailsActivity : AppCompatActivity() {
                         val name = optionView.findViewById<TextView>(R.id.optionName)
                         val count = optionView.findViewById<TextView>(R.id.optionCount)
                         val voteButton = optionView.findViewById<Button>(R.id.voteButton)
+                        val imageView = optionView.findViewById<ImageView>(R.id.optionImage)
+
+                        if(!option.imageData.isNullOrBlank()){
+                            try {
+                                val imageBytes = Base64.decode(option.imageData, Base64.DEFAULT)
+                                val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                                if(bitmap != null){
+                                    imageView.setImageBitmap(bitmap)
+                                } else {
+                                    imageView.setImageResource(R.drawable.ic_launcher_foreground)
+                                }
+                            } catch (e: Exception) {
+                                Log.e("VoteDetailsActivity", "Error decoding image: ${e.message}")
+                                imageView.setImageResource(R.drawable.ic_launcher_foreground)
+                            }
+                        } else {
+                            imageView.setImageResource(R.drawable.ic_launcher_foreground)
+                        }
+
 
                         name.text = option.name
                         count.text = option.count.toString()

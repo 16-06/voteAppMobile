@@ -25,6 +25,13 @@
             android:text="0 głosów"
             android:textSize="14sp"
             android:textColor="#777" />
+
+        <ImageView
+            android:id="@+id/optionImage"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_launcher_foreground"/>
     </LinearLayout>
 
     <Button

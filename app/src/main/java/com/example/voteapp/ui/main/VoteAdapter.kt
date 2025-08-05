@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import android.util.Base64
+import android.util.Log
 import com.example.voteapp.R
 import com.example.voteapp.data.model.Vote
 import com.example.voteapp.ui.vote.VoteDetailsActivity
@@ -33,13 +34,23 @@ class VoteAdapter(private val votes:List<Vote>) : RecyclerView.Adapter<VoteAdapt
         holder.name.text = vote.name
         holder.author.text = vote.author
         holder.category.text = vote.category
+        Log.d("Image", "ImageData: ${votes.map { it.imageData }}")
 
-        try {
-            val imageBytes = Base64.decode(vote.image, Base64.DEFAULT)
-            val bitmap = BitmapFactory.decodeByteArray(imageBytes,0, imageBytes.size)
-            holder.image.setImageBitmap(bitmap)
-        }
-        catch (e: Exception){
+        if (!vote.imageData.isNullOrBlank()) {
+            try {
+
+                val imageBytes = Base64.decode(vote.imageData, Base64.DEFAULT)
+                val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+
+                if (bitmap != null) {
+                    holder.image.setImageBitmap(bitmap)
+                } else {
+                    holder.image.setImageResource(R.drawable.ic_launcher_foreground)
+                }
+            } catch (e: Exception) {
+                holder.image.setImageResource(R.drawable.ic_launcher_foreground)
+            }
+        } else {
             holder.image.setImageResource(R.drawable.ic_launcher_foreground)
         }
 
