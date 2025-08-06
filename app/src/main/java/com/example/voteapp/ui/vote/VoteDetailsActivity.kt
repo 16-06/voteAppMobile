@@ -4,6 +4,7 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -13,6 +14,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.voteapp.R
 import com.example.voteapp.data.api.VoteApi
+import com.example.voteapp.data.model.AuthenticatedUserDto
 import com.example.voteapp.data.model.Comment
 import com.example.voteapp.data.model.CommentRequestDto
 import com.example.voteapp.data.model.CommentResponseDto
@@ -34,12 +36,32 @@ class VoteDetailsActivity : AppCompatActivity() {
 
     private var voteId: Int = -1
     private var hasVoted = false
+    private var currentUserId: Long = -1
+    private var currentUserUsername: String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_vote_details)
         api = RetrofitInstance.getApi(this)
+
+        api.getAuthenticatedUser().enqueue(object : Callback<AuthenticatedUserDto>{
+            override fun onResponse(call: Call<AuthenticatedUserDto>, response: Response<AuthenticatedUserDto>) {
+                if (response.isSuccessful) {
+                    val user = response.body()
+                    if( user != null) {
+                        currentUserId = user.id
+                        currentUserUsername = user.username
+                    } else {
+                        Toast.makeText(this@VoteDetailsActivity, "User not found", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<AuthenticatedUserDto>, t: Throwable) {
+                Toast.makeText(this@VoteDetailsActivity, "Error status: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
 
         voteId = intent.getIntExtra("voteId", -1)
         if (voteId == -1) {
@@ -213,9 +235,27 @@ class VoteDetailsActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     commentsContainer.removeAllViews()
                     response.body()?.forEach { comment ->
-                        val textView = TextView(this@VoteDetailsActivity)
-                        textView.text = "${comment.commentAuthorUsername}: ${comment.commentBody}"
-                        commentsContainer.addView(textView)
+                        val commentView = layoutInflater.inflate(R.layout.item_comment, commentsContainer, false)
+
+                        val commentText = commentView.findViewById<TextView>(R.id.commentText)
+                        val deleteButton = commentView.findViewById<ImageView>(R.id.deleteCommentButton)
+
+                        commentText.text = "${comment.commentAuthorUsername}: ${comment.commentBody}"
+
+                        Log.d("comment", "commentData: ${comment.commentAuthorUsername}")
+                        Log.d("user", "currentUser: ${currentUserUsername}")
+                        Log.d("user", "userid: ${currentUserId}")
+
+                        if (comment.commentAuthorUsername == currentUserUsername) {
+                            deleteButton.visibility = View.VISIBLE
+                            deleteButton.setOnClickListener {
+                                deleteComment(comment.id.toInt())
+                            }
+                        } else {
+                            deleteButton.visibility = View.GONE
+                        }
+
+                        commentsContainer.addView(commentView)
                     }
                 }
             }
@@ -223,6 +263,22 @@ class VoteDetailsActivity : AppCompatActivity() {
                 Toast.makeText(this@VoteDetailsActivity, "Error loading comments: ${t.message}", Toast.LENGTH_SHORT).show()
             }
 
+        })
+    }
+
+    private fun deleteComment(commentId : Int){
+        api.deleteComment(commentId).enqueue(object : Callback<Void>{
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if(response.isSuccessful){
+                    Toast.makeText(this@VoteDetailsActivity, "Comment deleted", Toast.LENGTH_SHORT).show()
+                    loadComments()
+                } else {
+                    Toast.makeText(this@VoteDetailsActivity, "Failed to delete comment", Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Toast.makeText(this@VoteDetailsActivity, "Error deleting comment: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
         })
     }
 

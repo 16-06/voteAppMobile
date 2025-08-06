@@ -1,5 +1,6 @@
 package com.example.voteapp.data.api
 
+import com.example.voteapp.data.model.AuthenticatedUserDto
 import com.example.voteapp.data.model.Comment
 import com.example.voteapp.data.model.CommentRequestDto
 import com.example.voteapp.data.model.CommentResponseDto
@@ -7,6 +8,7 @@ import com.example.voteapp.data.model.LoginRequest
 import com.example.voteapp.data.model.Vote
 import com.example.voteapp.data.model.VoteDetails
 import com.example.voteapp.data.model.VoteOption
+import com.example.voteapp.data.model.VoteResponseDto
 import com.example.voteapp.data.model.WhoVotedYetRequestDto
 import com.example.voteapp.data.model.WhoVotedYetResponseDto
 import okhttp3.ResponseBody
@@ -51,4 +53,10 @@ interface VoteApi {
 
     @POST("report/user/create")
     fun reportComment(@Body body: Map<String, Any>): Call<Void>
+
+    @GET("/api/users/getAuth")
+    fun getAuthenticatedUser(): Call<AuthenticatedUserDto>
+
+    @POST("/api/vote")
+    fun createVote(@Body voteData: Map<String, String>): Call<VoteResponseDto>
 }

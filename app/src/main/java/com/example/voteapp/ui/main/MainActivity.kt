@@ -15,10 +15,15 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import androidx.core.content.edit
+import com.example.voteapp.ui.vote.CreateVoteActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
 class MainActivity : ComponentActivity() {
     private lateinit var recyclerView: RecyclerView
+    private lateinit var fabCreateVote: FloatingActionButton
+    private lateinit var bottomNav: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -34,12 +39,28 @@ class MainActivity : ComponentActivity() {
             return
         }
 
-
-
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
+        fabCreateVote = findViewById(R.id.fab_create_vote)
+        bottomNav = findViewById(R.id.bottom_navigation)
 
+        fabCreateVote.setOnClickListener {
+            startActivity(Intent(this, CreateVoteActivity::class.java))
+        }
+
+        bottomNav.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.menu_home -> {
+                    true
+                }
+                R.id.menu_profile -> {
+                    startActivity(Intent(this, CreateVoteActivity::class.java))
+                    true
+                }
+                else -> false
+            }
+        }
 
         fetchVotes()
     }
