@@ -64,7 +64,7 @@ class CreateVoteActivity : AppCompatActivity() {
                     val vote = response.body()!!
                     Toast.makeText(this@CreateVoteActivity, "Vote created: ${vote.name}", Toast.LENGTH_SHORT).show()
 
-                    val intent = Intent(this@CreateVoteActivity, VoteDetailsActivity::class.java)
+                    val intent = Intent(this@CreateVoteActivity, AddOptionsActivity::class.java)
                     intent.putExtra("voteId", vote.id)
                     startActivity(intent)
                 }

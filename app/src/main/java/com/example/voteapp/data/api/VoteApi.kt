@@ -5,6 +5,7 @@ import com.example.voteapp.data.model.Comment
 import com.example.voteapp.data.model.CommentRequestDto
 import com.example.voteapp.data.model.CommentResponseDto
 import com.example.voteapp.data.model.LoginRequest
+import com.example.voteapp.data.model.OptionRequestDto
 import com.example.voteapp.data.model.Vote
 import com.example.voteapp.data.model.VoteDetails
 import com.example.voteapp.data.model.VoteOption
@@ -59,4 +60,7 @@ interface VoteApi {
 
     @POST("/api/vote")
     fun createVote(@Body voteData: Map<String, String>): Call<VoteResponseDto>
+
+    @POST("/api/vote-options")
+    fun addVoteOption(@Body option: OptionRequestDto): Call<Void>
 }
