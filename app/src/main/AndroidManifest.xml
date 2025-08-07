@@ -14,9 +14,10 @@
         android:theme="@style/AppTheme"
         android:networkSecurityConfig="@xml/network_security_config">
 
-        <activity android:name=".ui.vote.VoteDetailsActivity" />
-        <activity android:name=".ui.vote.CreateVoteActivity" />
-        <activity android:name=".ui.vote.AddOptionsActivity" />
+        <activity android:name=".ui.vote.details.VoteDetailsActivity" />
+        <activity android:name=".ui.vote.create.CreateVoteActivity" />
+        <activity android:name=".ui.vote.option.AddOptionsActivity" />
+        <activity android:name=".ui.profile.UserProfileActivity" />
 
         <activity
             android:name=".ui.login.LoginActivity"

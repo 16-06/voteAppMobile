@@ -6,6 +6,7 @@ import com.example.voteapp.data.model.CommentRequestDto
 import com.example.voteapp.data.model.CommentResponseDto
 import com.example.voteapp.data.model.LoginRequest
 import com.example.voteapp.data.model.OptionRequestDto
+import com.example.voteapp.data.model.UserDto
 import com.example.voteapp.data.model.Vote
 import com.example.voteapp.data.model.VoteDetails
 import com.example.voteapp.data.model.VoteOption
@@ -19,6 +20,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface VoteApi {
 
@@ -63,4 +65,16 @@ interface VoteApi {
 
     @POST("/api/vote-options")
     fun addVoteOption(@Body option: OptionRequestDto): Call<Void>
+
+    @GET("/api/profile/public/{userId}")
+    fun getPublicUserProfile(@Path("userId") userId: Long): Call<UserDto>
+
+    @GET("/api/vote/public/user/{userId}")
+    fun getVotesByUser(
+        @Path("userId") userId: Long,
+        @Query("limit") limit: Int,
+        @Query("page") page: Int
+    ): Call<List<VoteResponseDto>>
+
+
 }

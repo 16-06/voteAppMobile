@@ -15,7 +15,9 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import androidx.core.content.edit
-import com.example.voteapp.ui.vote.CreateVoteActivity
+import com.example.voteapp.data.model.AuthenticatedUserDto
+import com.example.voteapp.ui.profile.UserProfileActivity
+import com.example.voteapp.ui.vote.create.CreateVoteActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -55,14 +57,40 @@ class MainActivity : ComponentActivity() {
                     true
                 }
                 R.id.menu_profile -> {
-                    startActivity(Intent(this, CreateVoteActivity::class.java))
+                    startActivity(Intent(this, UserProfileActivity::class.java))
                     true
                 }
                 else -> false
             }
         }
 
+        userAuthenticationCheck()
         fetchVotes()
+    }
+
+    private fun userAuthenticationCheck() {
+        val api = RetrofitInstance.getApi(this)
+
+        api.getAuthenticatedUser().enqueue(object : Callback<AuthenticatedUserDto>{
+            override fun onResponse(call: Call<AuthenticatedUserDto>, response: Response<AuthenticatedUserDto>) {
+                if (response.isSuccessful) {
+                    val user = response.body()
+                    if( user != null) {
+                        val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+                        prefs.edit {
+                            putLong("userId", user.id)
+                                .putString("username", user.username)
+                        }
+                    } else {
+                        Toast.makeText(this@MainActivity, "User not found", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<AuthenticatedUserDto>, t: Throwable) {
+                Toast.makeText(this@MainActivity, "Error status: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun fetchVotes() {

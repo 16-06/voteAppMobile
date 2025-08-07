@@ -12,7 +12,7 @@ import android.util.Base64
 import android.util.Log
 import com.example.voteapp.R
 import com.example.voteapp.data.model.Vote
-import com.example.voteapp.ui.vote.VoteDetailsActivity
+import com.example.voteapp.ui.vote.details.VoteDetailsActivity
 
 class VoteAdapter(private val votes:List<Vote>) : RecyclerView.Adapter<VoteAdapter.VoteViewHolder>() {
 

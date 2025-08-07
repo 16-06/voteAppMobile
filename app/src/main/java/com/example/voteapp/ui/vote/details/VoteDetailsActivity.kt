@@ -1,4 +1,4 @@
-package com.example.voteapp.ui.vote
+package com.example.voteapp.ui.vote.details
 
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -43,8 +43,8 @@ class VoteDetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_vote_details)
-        api = RetrofitInstance.getApi(this)
 
+        api = RetrofitInstance.getApi(this)
         api.getAuthenticatedUser().enqueue(object : Callback<AuthenticatedUserDto>{
             override fun onResponse(call: Call<AuthenticatedUserDto>, response: Response<AuthenticatedUserDto>) {
                 if (response.isSuccessful) {

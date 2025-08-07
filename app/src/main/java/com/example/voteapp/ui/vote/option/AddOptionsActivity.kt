@@ -1,7 +1,6 @@
-package com.example.voteapp.ui.vote
+package com.example.voteapp.ui.vote.option
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -29,7 +28,7 @@ class AddOptionsActivity: AppCompatActivity() {
         voteId = intent.getLongExtra("voteId", -1)
         if (voteId == -1L) {
 
-            Toast.makeText(this, "Błędne ID głosowania", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Incorrect id", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
@@ -42,10 +41,9 @@ class AddOptionsActivity: AppCompatActivity() {
             val optionText = optionInput.text.toString()
             if (optionText.isNotBlank()) {
                 addOptionToVote(optionText)
-                Log.d("AddOption", "Kliknięto przycisk, dodaję opcję: $optionText")
             }
             else{
-                Toast.makeText(this, "Wprowadź tekst opcji", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Enter Text", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -63,11 +61,11 @@ class AddOptionsActivity: AppCompatActivity() {
         api.addVoteOption(dto).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if(response.isSuccessful){
-                    Toast.makeText(this@AddOptionsActivity, "Opcja dodana", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@AddOptionsActivity, "Option Added", Toast.LENGTH_SHORT).show()
                     addOptionToView(dto.name)
                     optionInput.text.clear()
                 } else {
-                    Toast.makeText(this@AddOptionsActivity, "Błąd podczas dodawania opcji", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@AddOptionsActivity, "Error", Toast.LENGTH_SHORT).show()
                 }
             }
 
