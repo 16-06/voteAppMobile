@@ -6,6 +6,7 @@ import com.example.voteapp.data.model.CommentRequestDto
 import com.example.voteapp.data.model.CommentResponseDto
 import com.example.voteapp.data.model.LoginRequest
 import com.example.voteapp.data.model.OptionRequestDto
+import com.example.voteapp.data.model.UpdateProfileDto
 import com.example.voteapp.data.model.UserDto
 import com.example.voteapp.data.model.Vote
 import com.example.voteapp.data.model.VoteDetails
@@ -19,6 +20,7 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -75,6 +77,12 @@ interface VoteApi {
         @Query("limit") limit: Int,
         @Query("page") page: Int
     ): Call<List<VoteResponseDto>>
+
+    @GET("/api/profile/public/{id}")
+    fun getPublicProfile(@Path("id") id: Long, ): Call<UserDto>
+
+    @PUT("/api/profile/update")
+    fun updateProfile(@Body updateData: UpdateProfileDto): Call<Void>
 
 
 }

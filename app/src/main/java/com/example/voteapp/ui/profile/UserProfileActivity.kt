@@ -69,11 +69,11 @@ class UserProfileActivity: AppCompatActivity() {
             }
         }
 
-//        editProfileButton.setOnClickListener {
-//            val intent = Intent(this, EditProfileActivity::class.java)
-//            intent.putExtra("userId", userId)
-//            startActivity(intent)
-//        }
+        editProfileButton.setOnClickListener {
+            val intent = Intent(this, EditProfileActivity::class.java)
+            intent.putExtra("userId", userId)
+            startActivity(intent)
+        }
     }
 
     private fun fetchVotes() {

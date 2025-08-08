@@ -7,3 +7,10 @@ data class UserDto (
     val bio: String,
     val interests: String,
 )
+
+data class UpdateProfileDto(
+    val firstName: String,
+    val lastName: String,
+    val bio: String,
+    val interests: String
+)
