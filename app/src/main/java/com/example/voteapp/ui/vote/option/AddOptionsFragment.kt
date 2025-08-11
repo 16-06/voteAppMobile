@@ -1,12 +1,15 @@
 package com.example.voteapp.ui.vote.option
 
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.example.voteapp.R
 import com.example.voteapp.data.model.OptionRequestDto
 import com.example.voteapp.data.network.RetrofitInstance
@@ -14,28 +17,32 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class AddOptionsActivity: AppCompatActivity() {
+class AddOptionsFragment: Fragment() {
 
-    private var voteId: Long = -1
+    private var voteId: Int = -1
     private lateinit var optionInput: EditText
     private lateinit var addButton: Button
     private lateinit var optionsList: LinearLayout
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_options)
 
-        voteId = intent.getLongExtra("voteId", -1)
-        if (voteId == -1L) {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_add_options, container, false)
+    }
 
-            Toast.makeText(this, "Incorrect id", Toast.LENGTH_SHORT).show()
-            finish()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        voteId = arguments?.getInt("voteId", -1) ?: -1
+
+        if (voteId == -1) {
+            Toast.makeText(requireContext(), "ID not found", Toast.LENGTH_SHORT).show()
+            requireActivity().supportFragmentManager.popBackStack()
             return
         }
 
-        optionInput = findViewById(R.id.optionInput)
-        addButton = findViewById(R.id.addOptionButton)
-        optionsList = findViewById(R.id.optionsList)
+        optionInput = view.findViewById(R.id.optionInput)
+        addButton = view.findViewById(R.id.addOptionButton)
+        optionsList = view.findViewById(R.id.optionsList)
 
         addButton.setOnClickListener {
             val optionText = optionInput.text.toString()
@@ -43,34 +50,35 @@ class AddOptionsActivity: AppCompatActivity() {
                 addOptionToVote(optionText)
             }
             else{
-                Toast.makeText(this, "Enter Text", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Enter Text", Toast.LENGTH_SHORT).show()
             }
         }
 
     }
 
+
     private fun addOptionToVote(optionText: String, imageData: ByteArray? = null) {
-        val api = RetrofitInstance.getApi(this)
+        val api = RetrofitInstance.getApi(requireContext())
 
         val dto = OptionRequestDto(
             name = optionInput.text.toString(),
             imageData = imageData,
-            voteId = voteId
+            voteId = voteId.toLong()
         )
         
         api.addVoteOption(dto).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if(response.isSuccessful){
-                    Toast.makeText(this@AddOptionsActivity, "Option Added", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Option Added", Toast.LENGTH_SHORT).show()
                     addOptionToView(dto.name)
                     optionInput.text.clear()
                 } else {
-                    Toast.makeText(this@AddOptionsActivity, "Error", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                Toast.makeText(this@AddOptionsActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
 
         })
@@ -78,7 +86,7 @@ class AddOptionsActivity: AppCompatActivity() {
     }
 
     private fun addOptionToView(optionName: String) {
-        val textView = TextView(this).apply {
+        val textView = TextView(requireContext()).apply {
             text = optionName
             setPadding(16, 16, 16, 16)
             textSize = 18f

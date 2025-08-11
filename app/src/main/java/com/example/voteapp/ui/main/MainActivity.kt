@@ -2,14 +2,9 @@ package com.example.voteapp.ui.main
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.voteapp.R
-import com.example.voteapp.data.model.Vote
 import com.example.voteapp.data.network.RetrofitInstance
 import com.example.voteapp.ui.login.LoginActivity
 import retrofit2.Call
@@ -18,7 +13,7 @@ import retrofit2.Response
 import androidx.core.content.edit
 import com.example.voteapp.data.model.AuthenticatedUserDto
 import com.example.voteapp.ui.profile.UserProfileFragment
-import com.example.voteapp.ui.vote.create.CreateVoteActivity
+import com.example.voteapp.ui.vote.create.CreateVoteFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -45,7 +40,10 @@ class MainActivity : AppCompatActivity() {
         bottomNav = findViewById(R.id.bottom_navigation)
 
         fabCreateVote.setOnClickListener {
-            startActivity(Intent(this, CreateVoteActivity::class.java))
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, CreateVoteFragment())
+                .addToBackStack(null)
+                .commit()
         }
 
         if(savedInstanceState == null){
