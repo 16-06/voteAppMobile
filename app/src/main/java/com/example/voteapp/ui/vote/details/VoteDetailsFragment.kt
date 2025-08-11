@@ -1,10 +1,13 @@
 package com.example.voteapp.ui.vote.details
 
+import android.content.SharedPreferences
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -12,6 +15,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.example.voteapp.R
 import com.example.voteapp.data.api.VoteApi
 import com.example.voteapp.data.model.AuthenticatedUserDto
@@ -26,25 +30,29 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class VoteDetailsActivity : AppCompatActivity() {
+class VoteDetailsFragment : Fragment() {
 
     private lateinit var optionsContainer: LinearLayout
     private lateinit var commentsContainer: LinearLayout
     private lateinit var commentInput: EditText
     private lateinit var commentButton: Button
     private lateinit var api: VoteApi
+    private lateinit var prefs: SharedPreferences
 
     private var voteId: Int = -1
     private var hasVoted = false
     private var currentUserId: Long = -1
     private var currentUserUsername: String = ""
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        return inflater.inflate(R.layout.fragment_vote_details, container, false)
+    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_vote_details)
 
-        api = RetrofitInstance.getApi(this)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        api = RetrofitInstance.getApi(requireContext())
         api.getAuthenticatedUser().enqueue(object : Callback<AuthenticatedUserDto>{
             override fun onResponse(call: Call<AuthenticatedUserDto>, response: Response<AuthenticatedUserDto>) {
                 if (response.isSuccessful) {
@@ -53,27 +61,30 @@ class VoteDetailsActivity : AppCompatActivity() {
                         currentUserId = user.id
                         currentUserUsername = user.username
                     } else {
-                        Toast.makeText(this@VoteDetailsActivity, "User not found", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "User not found", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
 
             override fun onFailure(call: Call<AuthenticatedUserDto>, t: Throwable) {
-                Toast.makeText(this@VoteDetailsActivity, "Error status: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Error status: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
 
-        voteId = intent.getIntExtra("voteId", -1)
+        prefs = requireContext().getSharedPreferences("app_prefs", AppCompatActivity.MODE_PRIVATE)
+
+        voteId = arguments?.getInt("voteId", -1) ?: -1
+
         if (voteId == -1) {
-            Toast.makeText(this, "ID not found", Toast.LENGTH_SHORT).show()
-            finish()
+            Toast.makeText(requireContext(), "ID not found", Toast.LENGTH_SHORT).show()
+            requireActivity().supportFragmentManager.popBackStack()
             return
         }
 
-        optionsContainer = findViewById(R.id.optionsContainer)
-        commentsContainer = findViewById(R.id.commentsContainer)
-        commentInput = findViewById(R.id.commentInput)
-        commentButton = findViewById(R.id.commentButton)
+        optionsContainer = view.findViewById(R.id.optionsContainer)
+        commentsContainer = view.findViewById(R.id.commentsContainer)
+        commentInput = view.findViewById(R.id.commentInput)
+        commentButton = view.findViewById(R.id.commentButton)
 
         loadOptions()
         loadComments()
@@ -83,10 +94,9 @@ class VoteDetailsActivity : AppCompatActivity() {
             if (commentText.isNotEmpty()) {
                 postComment(commentText)
             } else {
-                Toast.makeText(this, "Comment cannot be empty", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Comment cannot be empty", Toast.LENGTH_SHORT).show()
             }
         }
-
     }
 
 
@@ -102,7 +112,7 @@ class VoteDetailsActivity : AppCompatActivity() {
                 }
             }
             override fun onFailure(call: Call<Map<String, Boolean>>, t: Throwable) {
-                Toast.makeText(this@VoteDetailsActivity, "Error checking vote status: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Error checking vote status: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -154,29 +164,29 @@ class VoteDetailsActivity : AppCompatActivity() {
                 }
             }
             override fun onFailure(call: Call<List<VoteOption>>, t: Throwable) {
-                Toast.makeText(this@VoteDetailsActivity, "Error loading options: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Error loading options: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
     private fun vote(optionId: Long) {
         if (hasVoted) {
-            Toast.makeText(this, "You have already voted", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "You have already voted", Toast.LENGTH_SHORT).show()
             return
         }
 
         api.voteOption(mapOf("id" to optionId)).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if(response.isSuccessful){
-                    Toast.makeText(this@VoteDetailsActivity, "Vote recorded", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Vote recorded", Toast.LENGTH_SHORT).show()
                     markAsVoted()
                     loadOptions()
                 } else {
-                    Toast.makeText(this@VoteDetailsActivity, "Failed to vote", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Failed to vote", Toast.LENGTH_SHORT).show()
                 }
             }
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                Toast.makeText(this@VoteDetailsActivity, "Error voting: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Error voting: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
 
@@ -193,14 +203,14 @@ class VoteDetailsActivity : AppCompatActivity() {
             override fun onResponse(call: Call<WhoVotedYetResponseDto>, response: Response<WhoVotedYetResponseDto>) {
                 if(response.isSuccessful){
                     hasVoted = true
-                    Toast.makeText(this@VoteDetailsActivity, "Marked as voted", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Marked as voted", Toast.LENGTH_SHORT).show()
                     loadOptions()
                 } else {
-                    Toast.makeText(this@VoteDetailsActivity, "Failed to mark as voted", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Failed to mark as voted", Toast.LENGTH_SHORT).show()
                 }
             }
             override fun onFailure(call: Call<WhoVotedYetResponseDto>, t: Throwable) {
-                Toast.makeText(this@VoteDetailsActivity, "Error marking as voted: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Error marking as voted: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -219,12 +229,12 @@ class VoteDetailsActivity : AppCompatActivity() {
                     loadComments()
                 }
                 else{
-                    Toast.makeText(this@VoteDetailsActivity, "Failed to post comment", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Failed to post comment", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<CommentResponseDto>, t: Throwable) {
-               Toast.makeText(this@VoteDetailsActivity, "Error posting comment: ${t.message}", Toast.LENGTH_SHORT).show()
+               Toast.makeText(requireContext(), "Error posting comment: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -260,7 +270,7 @@ class VoteDetailsActivity : AppCompatActivity() {
                 }
             }
             override fun onFailure(call: Call<List<Comment>>, t: Throwable) {
-                Toast.makeText(this@VoteDetailsActivity, "Error loading comments: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Error loading comments: ${t.message}", Toast.LENGTH_SHORT).show()
             }
 
         })
@@ -270,14 +280,14 @@ class VoteDetailsActivity : AppCompatActivity() {
         api.deleteComment(commentId).enqueue(object : Callback<Void>{
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if(response.isSuccessful){
-                    Toast.makeText(this@VoteDetailsActivity, "Comment deleted", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Comment deleted", Toast.LENGTH_SHORT).show()
                     loadComments()
                 } else {
-                    Toast.makeText(this@VoteDetailsActivity, "Failed to delete comment", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Failed to delete comment", Toast.LENGTH_SHORT).show()
                 }
             }
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                Toast.makeText(this@VoteDetailsActivity, "Error deleting comment: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Error deleting comment: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }

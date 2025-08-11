@@ -16,7 +16,7 @@ import com.example.voteapp.R
 import com.example.voteapp.data.model.UserDto
 import com.example.voteapp.data.model.VoteResponseDto
 import com.example.voteapp.data.network.RetrofitInstance
-import com.example.voteapp.ui.vote.details.VoteDetailsActivity
+import com.example.voteapp.ui.vote.details.VoteDetailsFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -102,10 +102,17 @@ class UserProfileFragment: Fragment(R.layout.fragment_user_profile) {
                     for((index, vote) in votes.withIndex()) {
                         val voteView = TextView(requireContext()).apply {
                             text = vote.name
+
                             setOnClickListener {
-                                val intent = Intent(requireContext(), VoteDetailsActivity::class.java)
-                                intent.putExtra("voteId", vote.id)
-                                startActivity(intent)
+                                val fragment = VoteDetailsFragment().apply {
+                                    arguments = Bundle().apply {
+                                        putInt("voteId", vote.id.toInt())
+                                    }
+                                }
+                                parentFragmentManager.beginTransaction()
+                                    .replace(R.id.fragment_container, fragment)
+                                    .addToBackStack(null)
+                                    .commit()
                             }
                         }
                         voteListLayout.addView(voteView)

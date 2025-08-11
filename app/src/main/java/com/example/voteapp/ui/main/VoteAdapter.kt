@@ -2,6 +2,7 @@ package com.example.voteapp.ui.main
 
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,9 +11,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import android.util.Base64
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import com.example.voteapp.R
 import com.example.voteapp.data.model.Vote
-import com.example.voteapp.ui.vote.details.VoteDetailsActivity
+import com.example.voteapp.ui.vote.details.VoteDetailsFragment
 
 class VoteAdapter(private val votes:List<Vote>) : RecyclerView.Adapter<VoteAdapter.VoteViewHolder>() {
 
@@ -54,11 +56,14 @@ class VoteAdapter(private val votes:List<Vote>) : RecyclerView.Adapter<VoteAdapt
             holder.image.setImageResource(R.drawable.ic_launcher_foreground)
         }
 
-        holder.itemView.setOnClickListener{
-            val context = holder.itemView.context
-            val intent = Intent(context, VoteDetailsActivity::class.java)
-            intent.putExtra("voteId", vote.id)
-            context.startActivity(intent)
+        holder.itemView.setOnClickListener {
+            val fragment = VoteDetailsFragment().apply {
+                arguments = Bundle().apply { putInt("voteId", vote.id) }
+            }
+            (holder.itemView.context as AppCompatActivity).supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit()
         }
     }
 
