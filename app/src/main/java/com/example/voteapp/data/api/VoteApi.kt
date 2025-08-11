@@ -6,6 +6,7 @@ import com.example.voteapp.data.model.CommentRequestDto
 import com.example.voteapp.data.model.CommentResponseDto
 import com.example.voteapp.data.model.LoginRequest
 import com.example.voteapp.data.model.OptionRequestDto
+import com.example.voteapp.data.model.RegisterDto
 import com.example.voteapp.data.model.UpdateProfileDto
 import com.example.voteapp.data.model.UserDto
 import com.example.voteapp.data.model.Vote
@@ -83,6 +84,9 @@ interface VoteApi {
 
     @PUT("/api/profile/update")
     fun updateProfile(@Body updateData: UpdateProfileDto): Call<Void>
+
+    @POST("/api/users/public/register")
+    fun registerUser(@Body request: RegisterDto): Call<Void>
 
 
 }

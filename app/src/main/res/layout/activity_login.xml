@@ -1,39 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="24dp"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:background="#FAFAFA">
-
-    <EditText
-        android:id="@+id/usernameEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Username"
-        android:backgroundTint="#6200EE"
-        android:padding="12dp"
-        android:layout_marginBottom="16dp"
-        android:inputType="textEmailAddress"/>
-
-    <EditText
-        android:id="@+id/passwordEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Password"
-        android:backgroundTint="#6200EE"
-        android:padding="12dp"
-        android:layout_marginBottom="24dp"
-        android:inputType="textPassword"/>
-
-    <Button
-        android:id="@+id/loginButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Log In"
-        android:background="#6200EE"
-        android:textColor="#FFFFFF"
-        android:padding="12dp"
-        android:textAllCaps="false"/>
-</LinearLayout>
+    android:layout_height="match_parent" />
