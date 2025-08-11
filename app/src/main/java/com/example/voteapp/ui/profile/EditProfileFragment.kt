@@ -1,11 +1,15 @@
 package com.example.voteapp.ui.profile
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.example.voteapp.R
 import com.example.voteapp.data.model.UpdateProfileDto
 import com.example.voteapp.data.model.UserDto
@@ -14,7 +18,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class EditProfileActivity: AppCompatActivity() {
+class EditProfileFragment: Fragment() {
 
     private lateinit var editFirstName: EditText
     private lateinit var editLastName: EditText
@@ -25,18 +29,17 @@ class EditProfileActivity: AppCompatActivity() {
 
     private var userId: Long = -1
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_edit_profile)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) : View? {
+        val view = inflater.inflate(R.layout.fragment_edit_profile, container, false)
 
-        prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        prefs = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         userId = prefs.getLong("userId", -1)
 
-        editFirstName = findViewById(R.id.editFirstName)
-        editLastName = findViewById(R.id.editLastName)
-        editBio = findViewById(R.id.editBio)
-        editInterests = findViewById(R.id.editInterests)
-        saveButton = findViewById(R.id.saveButton)
+        editFirstName = view.findViewById(R.id.editFirstName)
+        editLastName = view.findViewById(R.id.editLastName)
+        editBio = view.findViewById(R.id.editBio)
+        editInterests = view.findViewById(R.id.editInterests)
+        saveButton = view.findViewById(R.id.saveButton)
 
         fetchUserProfile()
 
@@ -44,13 +47,13 @@ class EditProfileActivity: AppCompatActivity() {
             updateUserProfile()
         }
 
-
+        return view
 
     }
 
     private fun updateUserProfile() {
 
-        val api = RetrofitInstance.getApi(this)
+        val api = RetrofitInstance.getApi(requireContext())
         val updateData = UpdateProfileDto(
             firstName = editFirstName.text.toString(),
             lastName = editLastName.text.toString(),
@@ -64,23 +67,23 @@ class EditProfileActivity: AppCompatActivity() {
             override fun onResponse(call: Call<Void>, response: Response<Void>){
 
                 if(response.isSuccessful){
-                    Toast.makeText(this@EditProfileActivity, "Profile updated", Toast.LENGTH_SHORT).show()
-                    finish()
+                    Toast.makeText(requireContext(), "Profile updated", Toast.LENGTH_SHORT).show()
+                    parentFragmentManager.popBackStack()
                 }
                 else{
-                    Toast.makeText(this@EditProfileActivity, "Failed to update profile", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Failed to update profile", Toast.LENGTH_SHORT).show()
                 }
 
             }
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                Toast.makeText(this@EditProfileActivity, "Error updating profile", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Error updating profile", Toast.LENGTH_SHORT).show()
             }
         })
 
     }
 
     private fun fetchUserProfile() {
-        val api = RetrofitInstance.getApi(this)
+        val api = RetrofitInstance.getApi(requireContext())
 
         api.getPublicUserProfile(userId).enqueue(object : Callback<UserDto> {
             override fun onResponse(call: Call<UserDto>, response: Response<UserDto>) {
@@ -99,7 +102,7 @@ class EditProfileActivity: AppCompatActivity() {
 
         }
             override fun onFailure(call: Call<UserDto>, t: Throwable) {
-                Toast.makeText(this@EditProfileActivity, "Error fetching user data", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Error fetching user data", Toast.LENGTH_SHORT).show()
             }
         })
     }

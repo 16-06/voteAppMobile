@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.voteapp.R
@@ -16,14 +17,13 @@ import retrofit2.Callback
 import retrofit2.Response
 import androidx.core.content.edit
 import com.example.voteapp.data.model.AuthenticatedUserDto
-import com.example.voteapp.ui.profile.UserProfileActivity
+import com.example.voteapp.ui.profile.UserProfileFragment
 import com.example.voteapp.ui.vote.create.CreateVoteActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
-class MainActivity : ComponentActivity() {
-    private lateinit var recyclerView: RecyclerView
+class MainActivity : AppCompatActivity() {
     private lateinit var fabCreateVote: FloatingActionButton
     private lateinit var bottomNav: BottomNavigationView
 
@@ -41,9 +41,6 @@ class MainActivity : ComponentActivity() {
             return
         }
 
-        recyclerView = findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-
         fabCreateVote = findViewById(R.id.fab_create_vote)
         bottomNav = findViewById(R.id.bottom_navigation)
 
@@ -51,21 +48,33 @@ class MainActivity : ComponentActivity() {
             startActivity(Intent(this, CreateVoteActivity::class.java))
         }
 
+        if(savedInstanceState == null){
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, HomeFragment())
+                .commit()
+
+        }
+
         bottomNav.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.menu_home -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, HomeFragment())
+                        .commit()
                     true
                 }
                 R.id.menu_profile -> {
-                    startActivity(Intent(this, UserProfileActivity::class.java))
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, UserProfileFragment())
+                        .commit()
                     true
                 }
                 else -> false
             }
         }
 
+
         userAuthenticationCheck()
-        fetchVotes()
     }
 
     private fun userAuthenticationCheck() {
@@ -89,34 +98,6 @@ class MainActivity : ComponentActivity() {
 
             override fun onFailure(call: Call<AuthenticatedUserDto>, t: Throwable) {
                 Toast.makeText(this@MainActivity, "Error status: ${t.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
-    private fun fetchVotes() {
-        RetrofitInstance.getApi(this).getAllVotes().enqueue(object: Callback<List<Vote>> {
-            override fun onResponse(call: Call<List<Vote>>, response: Response<List<Vote>>) {
-
-                if(response.code() == 401){
-                    getSharedPreferences("app_prefs", MODE_PRIVATE).edit { remove("jwt_token") }
-                    startActivity(
-                        Intent(this@MainActivity, LoginActivity::class.java)
-                    )
-                    finish()
-                    return
-                }
-
-                if(response.isSuccessful){
-                    val votes = response.body() ?: emptyList()
-                    Log.d("VoteApp", "Votes: ${votes.map { it.id }}")
-                    recyclerView.adapter = VoteAdapter(votes)
-                }
-                else{
-                    Toast.makeText(this@MainActivity, "Api error", Toast.LENGTH_SHORT).show()
-                }
-            }
-            override fun onFailure(call: Call<List<Vote>>, t: Throwable){
-                Toast.makeText(this@MainActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
