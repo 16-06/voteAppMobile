@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.voteapp.R
 import com.example.voteapp.data.model.OptionRequestDto
+import com.example.voteapp.data.model.VoteOption
 import com.example.voteapp.data.network.RetrofitInstance
 import retrofit2.Call
 import retrofit2.Callback
@@ -54,6 +55,28 @@ class AddOptionsFragment: Fragment() {
             }
         }
 
+        loadExistingOptions()
+
+    }
+
+    private fun loadExistingOptions() {
+        val api = RetrofitInstance.getApi(requireContext())
+        api.getVoteOptions(voteId).enqueue(object : Callback<List<VoteOption>> {
+            override fun onResponse(call: Call<List<VoteOption>>, response: Response<List<VoteOption>>) {
+                if(response.isSuccessful){
+                    val options = response.body() ?: emptyList()
+                    for (option in options) {
+                        addOptionToView(option.name)
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Error loading options", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<List<VoteOption>>, t: Throwable) {
+                Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
 

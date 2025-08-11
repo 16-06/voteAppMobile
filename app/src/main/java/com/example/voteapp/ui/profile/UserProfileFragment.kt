@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -17,6 +18,7 @@ import com.example.voteapp.data.model.UserDto
 import com.example.voteapp.data.model.VoteResponseDto
 import com.example.voteapp.data.network.RetrofitInstance
 import com.example.voteapp.ui.vote.details.VoteDetailsFragment
+import com.example.voteapp.ui.vote.option.AddOptionsFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -99,15 +101,21 @@ class UserProfileFragment: Fragment(R.layout.fragment_user_profile) {
                         loadMoreButton.visibility = Button.GONE
                     }
 
-                    for((index, vote) in votes.withIndex()) {
+                    for ((index, vote) in votes.withIndex()) {
+                        val container = LinearLayout(requireContext()).apply {
+                            orientation = LinearLayout.HORIZONTAL
+                            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                                setMargins(0, 8, 0, 8)
+                            }
+                        }
+
                         val voteView = TextView(requireContext()).apply {
                             text = vote.name
-
+                            textSize = 16f
+                            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
                             setOnClickListener {
                                 val fragment = VoteDetailsFragment().apply {
-                                    arguments = Bundle().apply {
-                                        putInt("voteId", vote.id.toInt())
-                                    }
+                                    arguments = Bundle().apply { putInt("voteId", vote.id.toInt()) }
                                 }
                                 parentFragmentManager.beginTransaction()
                                     .replace(R.id.fragment_container, fragment)
@@ -115,7 +123,26 @@ class UserProfileFragment: Fragment(R.layout.fragment_user_profile) {
                                     .commit()
                             }
                         }
-                        voteListLayout.addView(voteView)
+
+                        val editIcon = ImageButton(requireContext()).apply {
+                            setImageResource(android.R.drawable.ic_input_get)
+                            background = null
+
+                            setOnClickListener {
+                                val fragment = AddOptionsFragment().apply {
+                                    arguments = Bundle().apply { putInt("voteId", vote.id.toInt()) }
+                                }
+                                parentFragmentManager.beginTransaction()
+                                    .replace(R.id.fragment_container, fragment)
+                                    .addToBackStack(null)
+                                    .commit()
+                            }
+                        }
+
+                        container.addView(voteView)
+                        container.addView(editIcon)
+
+                        voteListLayout.addView(container)
                         voteViews.add(voteView)
                     }
 
