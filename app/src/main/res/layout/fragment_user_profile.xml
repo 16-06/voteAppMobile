@@ -71,6 +71,13 @@
             android:visibility="gone"
             android:layout_marginBottom="24dp" />
 
+        <Button
+            android:id="@+id/changePasswordButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:text="Zmien haslo" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

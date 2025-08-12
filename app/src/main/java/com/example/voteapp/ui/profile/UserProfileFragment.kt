@@ -31,6 +31,7 @@ class UserProfileFragment: Fragment(R.layout.fragment_user_profile) {
     private lateinit var bioView: TextView
     private lateinit var interestsView: TextView
     private lateinit var editProfileButton: Button
+    private lateinit var changePasswordButton: Button
     private lateinit var voteListLayout: LinearLayout
     private lateinit var loadMoreButton: Button
     private lateinit var prefs: SharedPreferences
@@ -65,6 +66,7 @@ class UserProfileFragment: Fragment(R.layout.fragment_user_profile) {
         bioView = view.findViewById(R.id.bioTextView)
         interestsView = view.findViewById(R.id.interestsTextView)
         editProfileButton = view.findViewById(R.id.editProfileButton)
+        changePasswordButton = view.findViewById(R.id.changePasswordButton)
         voteListLayout = view.findViewById(R.id.voteListLayout)
         loadMoreButton = view.findViewById(R.id.loadMoreButton)
 
@@ -83,6 +85,13 @@ class UserProfileFragment: Fragment(R.layout.fragment_user_profile) {
         editProfileButton.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, EditProfileFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        changePasswordButton.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, ChangePasswordFragment())
                 .addToBackStack(null)
                 .commit()
         }

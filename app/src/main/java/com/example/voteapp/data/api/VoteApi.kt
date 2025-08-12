@@ -1,6 +1,7 @@
 package com.example.voteapp.data.api
 
 import com.example.voteapp.data.model.AuthenticatedUserDto
+import com.example.voteapp.data.model.ChangePasswordDto
 import com.example.voteapp.data.model.Comment
 import com.example.voteapp.data.model.CommentRequestDto
 import com.example.voteapp.data.model.CommentResponseDto
@@ -91,6 +92,9 @@ interface VoteApi {
 
     @POST("/api/users/public/login/2fa")
     fun verify2FA(@Body request: TwoFactorLoginDto): Call<ResponseBody>
+
+    @PUT("/api/users/changePassword")
+    fun changePassword(@Body request: ChangePasswordDto): Call<Void>
 
 
 }

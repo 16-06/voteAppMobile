@@ -64,8 +64,6 @@ class TwoFactorCodeFragment : Fragment() {
                                 remove("username_2fa")
                                 apply()
                             }
-                            Log.e("VoteDetailsActivity", "aaa: $token")
-                            Log.e("VoteDetailsActivity", "aaa: $username")
                             startActivity(Intent(requireContext(), MainActivity::class.java))
                             requireActivity().finish()
                         }
