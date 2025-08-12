@@ -44,7 +44,18 @@ class LoginFragment : Fragment() {
             RetrofitInstance.getApi(requireContext()).login(loginRequest).enqueue(object :
                 Callback<ResponseBody> {
                 override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>){
-                    if(response.isSuccessful){
+
+                    if(response.code() == 202){
+                        val prefs = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+                        prefs.edit { putString("username_2fa", usernameInput.text.toString()) }
+                        parentFragmentManager.beginTransaction()
+                            .replace(R.id.fragment_container, TwoFactorCodeFragment())
+                            .addToBackStack(null)
+                            .commit()
+
+                    }
+
+                    else if(response.isSuccessful){
                         val token = response.body()?.string()?.trim('"')
                         if (token!= null){
                             val prefs = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
@@ -56,6 +67,7 @@ class LoginFragment : Fragment() {
                             Toast.makeText(requireContext(), "Token not found", Toast.LENGTH_SHORT).show()
                         }
                     }
+
                     else{
                         Toast.makeText(requireContext(), "Bad credentials", Toast.LENGTH_SHORT).show()
                     }

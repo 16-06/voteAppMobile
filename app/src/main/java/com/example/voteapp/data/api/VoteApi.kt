@@ -7,6 +7,7 @@ import com.example.voteapp.data.model.CommentResponseDto
 import com.example.voteapp.data.model.LoginRequest
 import com.example.voteapp.data.model.OptionRequestDto
 import com.example.voteapp.data.model.RegisterDto
+import com.example.voteapp.data.model.TwoFactorLoginDto
 import com.example.voteapp.data.model.UpdateProfileDto
 import com.example.voteapp.data.model.UserDto
 import com.example.voteapp.data.model.Vote
@@ -87,6 +88,9 @@ interface VoteApi {
 
     @POST("/api/users/public/register")
     fun registerUser(@Body request: RegisterDto): Call<Void>
+
+    @POST("/api/users/public/login/2fa")
+    fun verify2FA(@Body request: TwoFactorLoginDto): Call<ResponseBody>
 
 
 }

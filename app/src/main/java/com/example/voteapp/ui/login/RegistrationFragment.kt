@@ -83,7 +83,12 @@ class RegistrationFragment : Fragment() {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if(response.isSuccessful){
 
-                    Toast.makeText(requireContext(), "Registration successful", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Account created, check email box to activate account.",
+                        Toast.LENGTH_LONG
+                    ).show()
+
                     parentFragmentManager.popBackStack()
 
                 }
