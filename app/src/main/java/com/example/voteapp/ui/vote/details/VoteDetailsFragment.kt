@@ -26,6 +26,7 @@ import com.example.voteapp.data.model.VoteOption
 import com.example.voteapp.data.model.WhoVotedYetRequestDto
 import com.example.voteapp.data.model.WhoVotedYetResponseDto
 import com.example.voteapp.data.network.RetrofitInstance
+import com.example.voteapp.ui.vote.result.VoteResultsFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -36,6 +37,7 @@ class VoteDetailsFragment : Fragment() {
     private lateinit var commentsContainer: LinearLayout
     private lateinit var commentInput: EditText
     private lateinit var commentButton: Button
+    private lateinit var resultButton: Button
     private lateinit var api: VoteApi
     private lateinit var prefs: SharedPreferences
 
@@ -85,6 +87,7 @@ class VoteDetailsFragment : Fragment() {
         commentsContainer = view.findViewById(R.id.commentsContainer)
         commentInput = view.findViewById(R.id.commentInput)
         commentButton = view.findViewById(R.id.commentButton)
+        resultButton = view.findViewById(R.id.resultButton)
 
         loadOptions()
         loadComments()
@@ -97,6 +100,19 @@ class VoteDetailsFragment : Fragment() {
                 Toast.makeText(requireContext(), "Comment cannot be empty", Toast.LENGTH_SHORT).show()
             }
         }
+
+        resultButton.setOnClickListener {
+            val bundle = Bundle().apply {
+                putInt("voteId", voteId)
+            }
+            val resultsFragment = VoteResultsFragment().apply {
+                arguments = bundle
+            }
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, resultsFragment)
+                .addToBackStack(null)
+                .commit()
+        }
     }
 
 
@@ -105,6 +121,7 @@ class VoteDetailsFragment : Fragment() {
             override fun onResponse(call: Call<Map<String, Boolean>>, response: Response<Map<String, Boolean>>) {
                 if(response.isSuccessful && response.body()?.get("hasVoted") == true){
                     loadVoteOptions(disableButtons = true)
+                    resultButton.visibility = View.VISIBLE
 
                 }
                 else{
@@ -181,6 +198,7 @@ class VoteDetailsFragment : Fragment() {
                     Toast.makeText(requireContext(), "Vote recorded", Toast.LENGTH_SHORT).show()
                     markAsVoted()
                     loadOptions()
+                    resultButton.visibility = View.VISIBLE
                 } else {
                     Toast.makeText(requireContext(), "Failed to vote", Toast.LENGTH_SHORT).show()
                 }

@@ -13,6 +13,7 @@ import com.example.voteapp.data.model.UpdateProfileDto
 import com.example.voteapp.data.model.UserDto
 import com.example.voteapp.data.model.Vote
 import com.example.voteapp.data.model.VoteDetails
+import com.example.voteapp.data.model.VoteDetailsDto
 import com.example.voteapp.data.model.VoteOption
 import com.example.voteapp.data.model.VoteResponseDto
 import com.example.voteapp.data.model.WhoVotedYetRequestDto
@@ -40,6 +41,9 @@ interface VoteApi {
 
     @GET("/api/vote/byId/{id}")
     fun getVoteDetails(@Path("id") voteId: Int): Call<VoteDetails>
+
+    @GET("/api/vote/byId/{id}")
+    fun getVoteResult(@Path("id") voteId: Int): Call<VoteDetailsDto>
 
     @GET("/api/whoVoted/{voteId}")
     fun hasUserVoted(@Path("voteId") voteId: Long): Call<Map<String, Boolean>>

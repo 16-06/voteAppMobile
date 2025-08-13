@@ -3,6 +3,7 @@ package com.example.voteapp.ui.login
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,6 +45,8 @@ class LoginFragment : Fragment() {
             RetrofitInstance.getApi(requireContext()).login(loginRequest).enqueue(object :
                 Callback<ResponseBody> {
                 override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>){
+
+                    Log.d("VoteApp", "Votes: ${response.code()}")
 
                     if(response.code() == 202){
                         val prefs = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
